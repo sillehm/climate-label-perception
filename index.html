@@ -89,7 +89,7 @@
     }
 
     #debrief-screen {
-      display: none;
+      display: block;
       text-align: center;
       margin-top: 40px;
     }
@@ -325,6 +325,7 @@
         <h2>Gemmer dine data...</h2>
         <p>Vent venligst - luk ikke fanen endnu.</p>
       `;
+      debrief.style.display = "block";
       showPage("debrief-screen");
 
       const maxRetries = 3;
@@ -366,4 +367,3 @@
   </script>
 </body>
 </html>
-
