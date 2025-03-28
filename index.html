@@ -251,18 +251,23 @@
       document.getElementById('nextTrialBtn').disabled = true;
       document.querySelectorAll('.brandBtn').forEach(btn => btn.classList.remove('selected'));
 
-      const stim = trials[currentTrial];
-      const img = document.getElementById('stimulusImage');
-      img.src = stim.imageFile;
-      img.style.display = 'block';
-
+      
+    let stim = trials[currentTrial];
+    let imgElement = document.getElementById('stimulusImage');
+    
+    const preload = new Image();
+    preload.onload = () => {
+      imgElement.src = stim.imageFile;
+      imgElement.style.display = 'block';
+    
       setTimeout(() => {
-        img.style.display = 'none';
+        imgElement.style.display = 'none';
         document.getElementById('questions').style.display = 'block';
         trialStartTime = Date.now();
-      }, 2500);
-    }
-
+      }, 2500); // show image exactly 2500ms
+    };
+    preload.src = stim.imageFile;
+    
     function checkFormCompletion() {
       const price = document.getElementById('priceInput').value.trim();
       document.getElementById('nextTrialBtn').disabled = !(price && selectedLabel);
@@ -349,7 +354,7 @@
           success = true;
           break;
         } catch (err) {
-          console.warn(`⏳ Upload forsøg #${attempt} mislykkedes`, err);
+          console.warn(`Upload forsøg #${attempt} mislykkedes`, err);
           if (attempt < maxRetries) {
             await new Promise(resolve => setTimeout(resolve, 5000));
           }
