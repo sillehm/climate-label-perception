@@ -87,6 +87,12 @@
       margin-top: 40px;
       margin-bottom: 10px;
     }
+
+    #debrief-screen {
+      display: none;
+      text-align: center;
+      margin-top: 40px;
+    }
   </style>
 </head>
 <body>
@@ -156,6 +162,7 @@
     </div>
   </div>
 
+  <div id="debrief-screen"></div>
   
 
   <script>
@@ -253,7 +260,7 @@
         img.style.display = 'none';
         document.getElementById('questions').style.display = 'block';
         trialStartTime = Date.now();
-      }, 1000);
+      }, 2500);
     }
 
     function checkFormCompletion() {
@@ -295,20 +302,61 @@
       startTrial();
     });
 
-    function submitData() {
-      fetch('YOUR_BACKEND_URL', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ trials: trialData })
-      })
-      .then(r => {
-        if (r.ok) alert('Data submitted successfully!');
-        else alert('Submission failed.');
-      })
-      .catch(e => {
-        console.error(e);
-        alert('Error submitting data.');
-      });
+    async function submitData() {
+      if (!trialData.length) return;
+
+      const headers = Object.keys(trialData[0]);
+      const rows = trialData.map(row =>
+        headers.map(h => `"${row[h]}"`).join(',')
+      );
+      const csvContent = [headers.join(','), ...rows].join('\n');
+
+      const participantId = document.getElementById("participant-id").value;
+      const dateStr = new Date().toISOString().split("T")[0];
+      const filename = `${participantId}_${dateStr}.csv`;
+
+      const debrief = document.getElementById("debrief-screen");
+      debrief.innerHTML = `
+        <h2>Gemmer dine data...</h2>
+        <p>Vent venligst - luk ikke fanen endnu.</p>
+      `;
+      showPage("debrief-screen");
+
+      const maxRetries = 3;
+      let success = false;
+
+      for (let attempt = 1; attempt <= maxRetries; attempt++) {
+        try {
+          const res = await fetch("https://osf-uploader-perception.onrender.com/upload", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ filename, content: csvContent })
+          });
+
+          if (!res.ok) throw new Error("Upload failed");
+
+          debrief.innerHTML = `
+            <h2>Tak for din deltagelse!</h2>
+            <p>Dine data er nu gemt.</p>
+            <p>Du må gerne lukke fanen.</p>
+          `;
+          success = true;
+          break;
+        } catch (err) {
+          console.warn(`⏳ Upload forsøg #${attempt} mislykkedes`, err);
+          if (attempt < maxRetries) {
+            await new Promise(resolve => setTimeout(resolve, 5000));
+          }
+        }
+      }
+
+      if (!success) {
+        debrief.innerHTML = `
+          <h2>Fejl</h2>
+          <p>Data kunne ikke gemmes efter gentagne forsøg.<br>
+          Kontakt forsøgslederen.</p>
+        `;
+      }
     }
   </script>
 </body>
