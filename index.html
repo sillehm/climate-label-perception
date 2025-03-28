@@ -14,16 +14,13 @@
       width: 200px;
       height: 300px;
       margin: 20px auto;
+      display: block;
     }
     .btn {
       padding: 10px 20px;
       margin: 5px;
       font-size: 18px;
       cursor: pointer;
-    }
-    .selected {
-      background-color: green;
-      color: white;
     }
     .input-box {
       font-size: 24px;
@@ -33,6 +30,41 @@
     #next {
       background: gray;
       pointer-events: none;
+    }
+    #question-area {
+      display: none;
+    }
+    #debrief-screen {
+      display: none;
+    }
+
+    /* Styled climate label buttons */
+    .label-button {
+      display: inline-block;
+      width: 60px;
+      height: 60px;
+      margin: 10px;
+      border-radius: 50%;
+      border: 2px solid #ccc;
+      background-color: #f0f0f0;
+      font-size: 24px;
+      font-weight: bold;
+      color: #333;
+      text-align: center;
+      line-height: 60px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .label-button:hover {
+      background-color: #e0e0e0;
+      border-color: #999;
+    }
+
+    .label-button.selected {
+      background-color: #4CAF50;
+      border-color: #4CAF50;
+      color: white;
     }
   </style>
 </head>
@@ -51,69 +83,80 @@
 <div id="trial-area" style="display:none">
   <h2>Climate Label Experiment</h2>
   <img id="stimulus" src="" alt="stimulus">
-  <div>
-    <label>Enter Price:</label>
-    <input type="number" id="price" class="input-box" maxlength="5">
+  
+  <div id="question-area">
+    <div>
+      <label>Enter Price:</label>
+      <input type="number" id="price" class="input-box" maxlength="5">
+    </div>
+    <p>Click to select the climate label:</p>
+    <div id="labels"></div>
+    <button id="next" class="btn">Next</button>
   </div>
-  <p>Click to select the climate label:</p>
-  <div id="labels"></div>
-  <button id="next" class="btn">Next</button>
 </div>
 
 <!-- Debrief -->
-<div id="debrief-screen" style="display:none"></div>
+<div id="debrief-screen"></div>
 
 <script>
 let trials = [];
 let current = 0;
-let startTime = null;
+let rtStart = null;
 let selectedLabel = null;
 let trialDataLog = [];
 const labelOptions = ['A', 'B', 'C', 'D', 'E'];
 
-// Load CSV and start experiment
 async function loadStimuli() {
-  const response = await fetch('stimuli.csv'); // Or 'data/stimuli.csv' if it's in a folder
+  const response = await fetch('stimuli.csv');
   const text = await response.text();
-  const rows = text.trim().split('\n').slice(1); // Skip header
+  const rows = text.trim().split('\n').slice(1);
   trials = rows.map(row => {
     const [itemID, labelPosition, labelType, imageFile] = row.split(',');
     return { itemID, labelPosition, labelType, imageFile };
   });
-
-  // Shuffle
   trials = trials.sort(() => 0.5 - Math.random());
 
   document.getElementById("start-screen").style.display = "none";
   document.getElementById("trial-area").style.display = "block";
-  showTrial();
+  showImage();
 }
 
-function showTrial() {
+function showImage() {
   const trial = trials[current];
   document.getElementById("stimulus").src = `images/${trial.imageFile}`;
+  document.getElementById("stimulus").style.display = "block";
+  document.getElementById("question-area").style.display = "none";
+
+  setTimeout(() => {
+    showQuestions();
+  }, 3000);
+}
+
+function showQuestions() {
+  document.getElementById("question-area").style.display = "block";
+  document.getElementById("stimulus").style.display = "none";
+
   document.getElementById("price").value = "";
   document.getElementById("next").style.background = "gray";
   document.getElementById("next").style.pointerEvents = "none";
   selectedLabel = null;
 
-  // Label buttons
   const labelDiv = document.getElementById("labels");
   labelDiv.innerHTML = "";
   labelOptions.forEach(label => {
-    const btn = document.createElement("button");
+    const btn = document.createElement("div");
     btn.innerText = label;
-    btn.className = "btn";
+    btn.className = "label-button";
     btn.onclick = () => {
       selectedLabel = label;
-      document.querySelectorAll("#labels .btn").forEach(b => b.classList.remove("selected"));
+      document.querySelectorAll(".label-button").forEach(b => b.classList.remove("selected"));
       btn.classList.add("selected");
       checkEnableNext();
     };
     labelDiv.appendChild(btn);
   });
 
-  startTime = performance.now();
+  rtStart = performance.now();
 }
 
 function checkEnableNext() {
@@ -128,8 +171,7 @@ function checkEnableNext() {
 document.getElementById("price").addEventListener("input", checkEnableNext);
 
 document.getElementById("next").onclick = () => {
-  const endTime = performance.now();
-  const rt = ((endTime - startTime) / 1000).toFixed(2);
+  const rt = ((performance.now() - rtStart) / 1000).toFixed(2);
   const trial = trials[current];
   trialDataLog.push({
     participant: document.getElementById("participant-id").value,
@@ -143,7 +185,7 @@ document.getElementById("next").onclick = () => {
 
   current++;
   if (current < trials.length) {
-    showTrial();
+    showImage();
   } else {
     finishExperiment();
   }
