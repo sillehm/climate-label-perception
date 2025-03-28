@@ -255,21 +255,17 @@
       document.querySelectorAll('.brandBtn').forEach(btn => btn.classList.remove('selected'));
 
       
-    let stim = trials[currentTrial];
-    let imgElement = document.getElementById('stimulusImage');
-    
-    const preload = new Image();
-    preload.onload = () => {
-      imgElement.src = stim.imageFile;
-      imgElement.style.display = 'block';
-    
+      const stim = trials[currentTrial];
+      const img = document.getElementById('stimulusImage');
+      img.src = stim.imageFile;
+      img.style.display = 'block';
+
       setTimeout(() => {
-        imgElement.style.display = 'none';
+        img.style.display = 'none';
         document.getElementById('questions').style.display = 'block';
         trialStartTime = Date.now();
-      }, 2500); // show image exactly 2500ms
-    };
-    preload.src = stim.imageFile;
+      }, 2500);
+    }
     
     function checkFormCompletion() {
       const price = document.getElementById('priceInput').value.trim();
