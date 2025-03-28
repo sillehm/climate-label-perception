@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <title>Ny Eksperiment</title>
   <style>
-    body { font-family: sans-serif; background: #f4f4f4; padding: 20px; }
+    body { font-family: sans-serif; background: #FFFFFF; padding: 20px; }
     .page { display: none; }
     .active { display: block; }
     .button { margin: 5px; }
@@ -36,29 +36,39 @@
       text-align: center;
     }
     .brandBtn {
-      padding: 15px 20px;
-      font-size: 18px;
-      margin: 10px;
-      border: 2px solid transparent;
-      background-color: #e0e0e0;
+      padding: 14px 20px;
+      font-size: 20px;
+      border: none;
+      border-radius: 5px;
       cursor: pointer;
+      background-color: #ddd;
+      transition: background-color 0.2s ease;
+      margin-top: 20px;
     }
-    .brandBtn.selected { /* NEW */
-      background-color: #b3d9ff;
-      border-color: #3399ff;
+    .brandBtn.selected {
+      background-color: #bbb;
     }
+    
+    
     #stimulusImage {
-      max-width: 60px;
+      max-width: 100px;
       margin-bottom: 10px;
       display: none;
     }
     .next-button {
-      padding: 15px 20px;
-      font-size: 18px;
-      margin: 10px;
-    }
-    #questions p {
+      padding: 14px 20px;
       font-size: 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      background-color: #ddd;
+      transition: background-color 0.2s ease;
+      margin-top: 20px;
+    }
+
+    
+    #questions p {
+      font-size: 24px;
     }
   </style>
 </head>
