@@ -28,6 +28,46 @@
       padding: 10px;
       font-size: 16px;
     }
+  /* Center the trial container */
+  #trialContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 70vh; /* Adjust as needed */
+    text-align: center;
+  }
+  
+  /* Optional: limit image size and add spacing */
+  #stimulusImage {
+    max-width: 500px;
+    margin-bottom: 20px;
+    display: none;
+  }
+
+    .answer-buttons button,
+    #next-button,
+    .next-btn {
+      padding: 14px 20px;
+      font-size: 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      background-color: #ddd;
+      transition: background-color 0.2s ease;
+      margin-top: 20px;
+    }
+
+    .answer-buttons button.selected {
+      background-color: #bbb;
+    }
+
+    .answer-buttons button:hover,
+    #next-button:hover,
+    .next-btn:hover {
+      background-color: #ccc;
+    }
+    
   </style>
 </head>
 <body>
@@ -57,14 +97,14 @@
   <div id="consent" class="page">
     <h1>Informeret Samtykke</h1>
     <p>[Her indsættes samtykketekst]</p>
-    <button id="consentBtn">Jeg samtykker</button>
+    <button id="next-btn">Næste</button>
   </div>
   
   <!-- Instructions Page -->
   <div id="instructions" class="page">
     <h1>Instruktioner</h1>
     <p>Du vil se et billede i 1000 ms, hvorefter du skal svare på to spørgsmål.</p>
-    <button id="startBtn">Start Eksperimentet</button>
+    <button id="next-btn">Start</button>
   </div>
   
   <!-- Experiment Page -->
@@ -81,7 +121,7 @@
           <button class="brandBtn" data-label="D">D</button>
           <button class="brandBtn" data-label="E">E</button>
         </div>
-        <button id="nextTrialBtn">Næste</button>
+        <button id="next-btn">Næste</button>
       </div>
     </div>
   </div>
