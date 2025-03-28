@@ -38,13 +38,23 @@
       min-height: 70vh; /* Adjust as needed */
       text-align: center;
     }
-    
+    .brandBtn {
+      padding: 15px 20px;   /* Increase padding for bigger buttons */
+      font-size: 18px;      /* Increase text size */
+      margin: 10px;         /* Spacing between buttons */
+    }
     /* Optional: limit image size and add spacing */
     #stimulusImage {
-      max-width: 500px;
-      margin-bottom: 20px;
+      max-width: 120px;
+      margin-bottom: 10px;
       display: none;
+    }.next-button {
+      padding: 15px 20px;
+      font-size: 18px;
+      margin: 10px;
     }
+
+    
   </style>
 </head>
 <body>
@@ -74,14 +84,14 @@
   <div id="consent" class="page">
     <h1>Informeret Samtykke</h1>
     <p>[Her indsættes samtykketekst]</p>
-    <button id="consentBtn">Jeg samtykker</button>
+    <button class="next-button" id="consentBtn">Næste</button>
   </div>
   
   <!-- Instructions Page -->
   <div id="instructions" class="page">
     <h1>Instruktioner</h1>
     <p>Du vil se et billede i 1000 ms, hvorefter du skal svare på to spørgsmål.</p>
-    <button id="startBtn">Start Eksperimentet</button>
+    <button class="next-button" id="startBtn">Næste</button>
   </div>
   
   <!-- Experiment Page -->
@@ -98,7 +108,7 @@
           <button class="brandBtn" data-label="D">D</button>
           <button class="brandBtn" data-label="E">E</button>
         </div>
-        <button id="nextTrialBtn">Næste</button>
+        <button class="next-button" id="nextTrialBtn">Næste</button>
       </div>
     </div>
   </div>
