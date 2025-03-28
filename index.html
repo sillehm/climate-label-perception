@@ -302,6 +302,11 @@
       startTrial();
     });
 
+    function showPage(pageId) {
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.getElementById(pageId).classList.add('active');
+    }
+
     async function submitData() {
       if (!trialData.length) return;
 
@@ -343,7 +348,7 @@
           success = true;
           break;
         } catch (err) {
-          console.warn(`Upload forsøg #${attempt} mislykkedes`, err);
+          console.warn(`⏳ Upload forsøg #${attempt} mislykkedes`, err);
           if (attempt < maxRetries) {
             await new Promise(resolve => setTimeout(resolve, 5000));
           }
@@ -361,3 +366,4 @@
   </script>
 </body>
 </html>
+
