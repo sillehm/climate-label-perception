@@ -112,15 +112,28 @@
   </div>
 
   <div id="consent" class="page">
-    <h1>Informeret Samtykke</h1>
-    <p>[Her indsættes samtykketekst]</p>
+    <h2>Samtykkeerklæring</h2>
+    <p>Du deltager i dette online studie, som er udarbejdet af Sille Hasselbalch Markussen i forbindelse med sit speciale i Cognitive Science. Studiet varer ca. XX minutter, og dine svar behandles anonymt og fortroligt i overensstemmelse med databeskyttelsesforordningen.
+    <br><br>
+    Hvis du har spørgsmål om studiet eller behandlingen af dine data, kan du kontakte Sille Hasselbalch Markussen, 202006969@post.au.dk.
+    <br><br>
+    Din deltagelse er helt frivillig, og du kan til enhver tid trække dit samtykke tilbage uden konsekvenser.</p>
     <button class="next-button" id="consentBtn">Næste</button>
   </div>
 
   <div id="instructions" class="page">
-    <h1>Instruktioner</h1>
-    <p>Du vil se et billede i 1000 ms, hvorefter du skal svare på to spørgsmål.</p>
+    <h2>Instruktioner</h2>
+    <p>Du vil kort blive vist et billede af en dagligvare. Herefter er det din opgave, hurtigst muligt, at angive varens vægt og det klimamærke den var mærket med. 
+    <br><br>
+      Du vil først blive ført igennem 3 øvelsesrunder, hvor du kan se hvordan undersøgelsen foregår. Derefter starter eksperimentet. 
+    </p>
     <button class="next-button" id="startBtn">Næste</button>
+  </div>
+
+  <div id="practiceEnd" class="page">
+    <h2>Nu starter eksperimentet</h2>
+    <p>Du vil nu se varer og angive deres pris og klimamærke.</p>
+    <button class="next-button" id="startBtn">Start Eksperiment</button>
   </div>
 
   <div id="experiment" class="page">
@@ -136,151 +149,162 @@
           <button class="brandBtn" data-label="D">D</button>
           <button class="brandBtn" data-label="E">E</button>
         </div>
-        <button class="next-button" id="nextTrialBtn" disabled>Næste</button> <!-- UPDATED -->
+        <button class="next-button" id="nextTrialBtn" disabled>Næste</button>
       </div>
     </div>
   </div>
 
+  
+
   <script>
     let participantID = generateParticipantID();
     document.getElementById('participant-id').value = participantID;
-
-    document.getElementById('demographics-form').addEventListener('submit', (e) => {
-      e.preventDefault();
-      showPage('consent');
-    });
-
-    document.getElementById('consentBtn').addEventListener('click', () => {
-      showPage('instructions');
-    });
-
-    document.getElementById('startBtn').addEventListener('click', () => {
-      showPage('experiment');
-      startTrial();
-    });
-
-    function showPage(pageId) {
-      document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
-      document.getElementById(pageId).classList.add('active');
-    }
-
-    function generateParticipantID() {
-      return 'ID-' + Math.random().toString(36).substr(2, 9);
-    }
-
     let stimuli = [];
     let trialData = [];
     let currentTrial = 0;
     let trialStartTime;
     let selectedLabel = '';
+    let practiceTrials = [];
+    let mainTrials = [];
+    let isPractice = true;
+
+    document.getElementById('demographics-form').addEventListener('submit', e => {
+      e.preventDefault();
+      showPage('consent');
+    });
+    document.getElementById('consentBtn').addEventListener('click', () => {
+      showPage('instructions');
+    });
+    document.getElementById('startPracticeBtn').addEventListener('click', () => {
+      showPage('experiment');
+      isPractice = true;
+      currentTrial = 0;
+      startTrial();
+    });
+    document.getElementById('startBtn').addEventListener('click', () => {
+      showPage('experiment');
+      isPractice = false;
+      currentTrial = 0;
+      startTrial();
+    });
+
+    function showPage(pageId) {
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.getElementById(pageId).classList.add('active');
+    }
+
+    function generateParticipantID() {
+      return "P" + Math.floor(100000 + Math.random() * 900000);
+    }
 
     fetch('stimuli.csv')
-      .then(response => response.text())
+      .then(r => r.text())
       .then(data => {
-        stimuli = parseCSV(data);
-        stimuli = shuffleArray(stimuli);
+        const allStimuli = parseCSV(data);
+        const shuffled = shuffleArray(allStimuli);
+        practiceTrials = shuffled.slice(0, 3);
+        mainTrials = shuffled.slice(3);
       });
 
     function parseCSV(data) {
-      const lines = data.split('\n').filter(line => line.trim() !== '');
+      const lines = data.split('\n').filter(l => l.trim() !== '');
       const header = lines[0].split(',');
-      let result = [];
-      for (let i = 1; i < lines.length; i++) {
-        let obj = {};
-        const currentLine = lines[i].split(',');
-        for (let j = 0; j < header.length; j++) {
-          obj[header[j].trim()] = currentLine[j].trim();
-        }
-        result.push(obj);
-      }
-      return result;
+      return lines.slice(1).map(line => {
+        const obj = {};
+        line.split(',').forEach((val, i) => obj[header[i].trim()] = val.trim());
+        return obj;
+      });
     }
 
-    function shuffleArray(array) {
-      for (let i = array.length - 1; i > 0; i--) {
+    function shuffleArray(arr) {
+      for (let i = arr.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
+        [arr[i], arr[j]] = [arr[j], arr[i]];
       }
-      return array;
+      return arr;
+    }
+
+    function getTrialList() {
+      return isPractice ? practiceTrials : mainTrials;
     }
 
     function startTrial() {
-      if (currentTrial >= stimuli.length) {
-        submitData();
+      const trials = getTrialList();
+      if (currentTrial >= trials.length) {
+        if (isPractice) showPage('practiceEnd');
+        else submitData();
         return;
       }
 
       selectedLabel = '';
       document.getElementById('priceInput').value = '';
       document.getElementById('questions').style.display = 'none';
-      document.getElementById('nextTrialBtn').disabled = true; // NEW
-      document.querySelectorAll('.brandBtn').forEach(btn => btn.classList.remove('selected')); // NEW
+      document.getElementById('nextTrialBtn').disabled = true;
+      document.querySelectorAll('.brandBtn').forEach(btn => btn.classList.remove('selected'));
 
-      let stim = stimuli[currentTrial];
-      let imgElement = document.getElementById('stimulusImage');
-      imgElement.src = stim.imageFile;
-      imgElement.style.display = 'block';
+      const stim = trials[currentTrial];
+      const img = document.getElementById('stimulusImage');
+      img.src = stim.imageFile;
+      img.style.display = 'block';
 
       setTimeout(() => {
-        imgElement.style.display = 'none';
+        img.style.display = 'none';
         document.getElementById('questions').style.display = 'block';
         trialStartTime = Date.now();
       }, 1000);
     }
 
-    function checkFormCompletion() { // NEW
-      const priceFilled = document.getElementById('priceInput').value.trim() !== '';
-      const labelChosen = selectedLabel !== '';
-      document.getElementById('nextTrialBtn').disabled = !(priceFilled && labelChosen);
+    function checkFormCompletion() {
+      const price = document.getElementById('priceInput').value.trim();
+      document.getElementById('nextTrialBtn').disabled = !(price && selectedLabel);
     }
 
     document.querySelectorAll('.brandBtn').forEach(btn => {
       btn.addEventListener('click', () => {
-        selectedLabel = btn.getAttribute('data-label');
+        selectedLabel = btn.dataset.label;
         document.querySelectorAll('.brandBtn').forEach(b => b.classList.remove('selected'));
         btn.classList.add('selected');
         checkFormCompletion();
       });
     });
 
-    document.getElementById('priceInput').addEventListener('input', checkFormCompletion); // NEW
+    document.getElementById('priceInput').addEventListener('input', checkFormCompletion);
 
     document.getElementById('nextTrialBtn').addEventListener('click', () => {
-      let reactionTime = Date.now() - trialStartTime;
-      let price = document.getElementById('priceInput').value;
-      let stim = stimuli[currentTrial];
+      const trialList = getTrialList();
+      const stim = trialList[currentTrial];
+      const price = document.getElementById('priceInput').value;
+      const reactionTime = Date.now() - trialStartTime;
 
-      trialData.push({
-        participantID: participantID,
-        stimulus: stim.imageFile,
-        reactionTime: reactionTime,
-        price: price,
-        brand: selectedLabel,
-        itemID: stim.itemID,
-        labelPosition: stim.labelPosition,
-        labelType: stim.labelType
-      });
+      if (!isPractice) {
+        trialData.push({
+          participantID,
+          stimulus: stim.imageFile,
+          reactionTime,
+          price,
+          brand: selectedLabel,
+          itemID: stim.itemID,
+          labelPosition: stim.labelPosition,
+          labelType: stim.labelType
+        });
+      }
 
       currentTrial++;
       startTrial();
     });
 
     function submitData() {
-      let payload = { trials: trialData };
       fetch('YOUR_BACKEND_URL', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
+        body: JSON.stringify({ trials: trialData })
       })
-      .then(response => {
-        if (response.ok) {
-          alert('Data submitted successfully!');
-        } else {
-          alert('Submission failed.');
-        }
+      .then(r => {
+        if (r.ok) alert('Data submitted successfully!');
+        else alert('Submission failed.');
       })
-      .catch(err => {
-        console.error(err);
+      .catch(e => {
+        console.error(e);
         alert('Error submitting data.');
       });
     }
