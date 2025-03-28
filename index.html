@@ -241,31 +241,36 @@
     }
 
     function startTrial() {
-      const trials = getTrialList();
-      if (currentTrial >= trials.length) {
-        if (isPractice) showPage('practiceEnd');
-        else submitData();
-        return;
-      }
+  const trials = getTrialList();
+  if (currentTrial >= trials.length) {
+    if (isPractice) showPage('practiceEnd');
+    else submitData();
+    return;
+  }
 
-      selectedLabel = '';
-      document.getElementById('priceInput').value = '';
-      document.getElementById('questions').style.display = 'none';
-      document.getElementById('nextTrialBtn').disabled = true;
-      document.querySelectorAll('.brandBtn').forEach(btn => btn.classList.remove('selected'));
+  selectedLabel = '';
+  document.getElementById('priceInput').value = '';
+  document.getElementById('questions').style.display = 'none';
+  document.getElementById('nextTrialBtn').disabled = true;
+  document.querySelectorAll('.brandBtn').forEach(btn => btn.classList.remove('selected'));
 
-      
-      const stim = trials[currentTrial];
-      const img = document.getElementById('stimulusImage');
-      img.src = stim.imageFile;
-      img.style.display = 'block';
+  const stim = trials[currentTrial];
+  const img = document.getElementById('stimulusImage');
 
-      setTimeout(() => {
-        img.style.display = 'none';
-        document.getElementById('questions').style.display = 'block';
-        trialStartTime = Date.now();
-      }, 2500);
-    }
+  // Preload image first
+  const preload = new Image();
+  preload.onload = () => {
+    img.src = stim.imageFile;
+    img.style.display = 'block';
+
+    setTimeout(() => {
+      img.style.display = 'none';
+      document.getElementById('questions').style.display = 'block';
+      trialStartTime = Date.now();
+    }, 2500);
+  };
+  preload.src = stim.imageFile;
+}
     
     function checkFormCompletion() {
       const price = document.getElementById('priceInput').value.trim();
