@@ -166,6 +166,9 @@
   
 
   <script>
+    function generateParticipantID() {
+      return "P" + Math.floor(100000 + Math.random() * 900000);
+    }
     let participantID = generateParticipantID();
     document.getElementById('participant-id').value = participantID;
     let stimuli = [];
