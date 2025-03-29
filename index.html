@@ -49,22 +49,18 @@
     .brandBtn.selected {
       background-color: #bbb;
     }
-
     .next-button:hover {
       background-color: #ccc;
     }
-    
     .brandBtn:hover:not(.selected) {
       background-color: #ccc;
     }
-
     #priceInput {
-      height: 25px;     /* Increase height */
-      width: 50px;     /* Reduce width */
-      font-size: 20px;  /* Increase font size */
+      height: 25px;
+      width: 50px;
+      font-size: 20px;
       padding: 10px;
     }
-    
     #stimulusImage {
       max-width: 260px;
       margin-bottom: 10px;
@@ -80,14 +76,11 @@
       transition: background-color 0.2s ease;
       margin-top: 20px;
     }
-
-    
     #questions p {
       font-size: 22px;
       margin-top: 40px;
       margin-bottom: 10px;
     }
-
     #debrief-screen {
       display: block;
       text-align: center;
@@ -96,6 +89,7 @@
   </style>
 </head>
 <body>
+  <!-- Demographics Page -->
   <div id="demographics" class="page active">
     <form id="demographics-form">
       <h3>Deltagerinformation</h3>
@@ -117,34 +111,28 @@
     </form>
   </div>
 
+  <!-- Consent Page -->
   <div id="consent" class="page">
     <h2>Samtykkeerklæring</h2>
-    <p>Du skal til at deltage i et online studie, som er udarbejdet af Sille Hasselbalch Markussen i forbindelse med sit speciale i Cognitive Science. Studiet varer ca. XX minutter, og dine svar behandles anonymt og fortroligt i overensstemmelse med databeskyttelsesforordningen.
-    <br><br>
-    Hvis du har spørgsmål om studiet eller behandlingen af dine data, kan du kontakte Sille Hasselbalch Markussen, 202006969@post.au.dk.
-    <br><br>
-    Din deltagelse er helt frivillig, og du kan til enhver tid trække dit samtykke tilbage uden konsekvenser.</p>
+    <p>Du skal til at deltage i et online studie ...</p>
     <button class="next-button" id="consentBtn">Næste</button>
   </div>
 
+  <!-- Instructions Page -->
   <div id="instructions" class="page">
     <h2>Instruktioner</h2>
-    <p>Du vil blive vist billeder af dagligvareartikler og blive bedt om at svare på, hvilken pris varen havde og hvilket klimamærke, der var på varen. 
-      <br> Visningen af dagligvarerne er kortvarig, og det er først når billedet er væk at du skal svare på de to spørgsmål. Sørg for at angive varens vægt og hvilket klimamærke varen havde og klik på "Næste" hurtigst muligt. 
-    <br><br>
-      Du vil først blive ført igennem 3 øvelsesrunder, hvor du kan se hvordan undersøgelsen foregår. Derefter starter eksperimentet. 
-    </p>
+    <p>Du vil blive vist billeder af dagligvareartikler ...</p>
     <button class="next-button" id="startPracticeBtn">Næste</button>
   </div>
 
+  <!-- Practice End Page -->
   <div id="practiceEnd" class="page">
     <h2>Nu starter eksperimentet</h2>
-    <p>Du vil nu se varer og angive deres pris og klimamærke.
-    <br><br>
-    Klik på "Næste", når du er klar til at starte.</p>
+    <p>Du vil nu se varer og angive deres pris og klimamærke ...</p>
     <button class="next-button" id="startBtn">Næste</button>
   </div>
 
+  <!-- Experiment Page -->
   <div id="experiment" class="page">
     <div id="trialContainer">
       <img id="stimulusImage" src="" alt="stimulus">
@@ -163,15 +151,25 @@
     </div>
   </div>
 
+  <!-- Debrief Screen -->
   <div id="debrief-screen" class="page"></div>
   
-
   <script>
+    /************** SINGLE DEFINITIONS ONLY **************/
+    
+    // Generate a random participant ID once
     function generateParticipantID() {
       return "P" + Math.floor(100000 + Math.random() * 900000);
     }
+    
+    // Show the desired page, hide others
+    function showPage(pageId) {
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.getElementById(pageId).classList.add('active');
+    }
+
+    /************** GLOBAL VARIABLES **************/
     let participantID = generateParticipantID();
-    document.getElementById('participant-id').value = participantID;
     let stimuli = [];
     let trialData = [];
     let currentTrial = 0;
@@ -181,19 +179,26 @@
     let mainTrials = [];
     let isPractice = true;
 
+    // Set the participant ID field right away
+    document.getElementById('participant-id').value = participantID;
+
+    /************** PAGE NAVIGATION **************/
     document.getElementById('demographics-form').addEventListener('submit', e => {
       e.preventDefault();
       showPage('consent');
     });
+
     document.getElementById('consentBtn').addEventListener('click', () => {
       showPage('instructions');
     });
+
     document.getElementById('startPracticeBtn').addEventListener('click', () => {
       showPage('experiment');
       isPractice = true;
       currentTrial = 0;
       startTrial();
     });
+
     document.getElementById('startBtn').addEventListener('click', () => {
       showPage('experiment');
       isPractice = false;
@@ -201,15 +206,7 @@
       startTrial();
     });
 
-    function showPage(pageId) {
-      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-      document.getElementById(pageId).classList.add('active');
-    }
-
-    function generateParticipantID() {
-      return "P" + Math.floor(100000 + Math.random() * 900000);
-    }
-
+    /************** FETCH STIMULI **************/
     fetch('stimuli.csv')
       .then(r => r.text())
       .then(data => {
@@ -219,6 +216,7 @@
         mainTrials = shuffled.slice(3);
       });
 
+    // Parse CSV
     function parseCSV(data) {
       const lines = data.split('\n').filter(l => l.trim() !== '');
       const header = lines[0].split(',');
@@ -229,6 +227,7 @@
       });
     }
 
+    // Shuffle
     function shuffleArray(arr) {
       for (let i = arr.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -237,47 +236,57 @@
       return arr;
     }
 
+    // Determine which list we are using
     function getTrialList() {
       return isPractice ? practiceTrials : mainTrials;
     }
 
+    /************** TRIAL LOGIC **************/
     function startTrial() {
-  const trials = getTrialList();
-  if (currentTrial >= trials.length) {
-    if (isPractice) showPage('practiceEnd');
-    else submitData();
-    return;
-  }
+      const trials = getTrialList();
+      if (currentTrial >= trials.length) {
+        // If practice is over, show practiceEnd; else submit data
+        if (isPractice) {
+          showPage('practiceEnd');
+        } else {
+          submitData();
+        }
+        return;
+      }
 
-  selectedLabel = '';
-  document.getElementById('priceInput').value = '';
-  document.getElementById('questions').style.display = 'none';
-  document.getElementById('nextTrialBtn').disabled = true;
-  document.querySelectorAll('.brandBtn').forEach(btn => btn.classList.remove('selected'));
+      // Reset
+      selectedLabel = '';
+      document.getElementById('priceInput').value = '';
+      document.getElementById('questions').style.display = 'none';
+      document.getElementById('nextTrialBtn').disabled = true;
+      document.querySelectorAll('.brandBtn').forEach(btn => btn.classList.remove('selected'));
 
-  const stim = trials[currentTrial];
-  const img = document.getElementById('stimulusImage');
+      const stim = trials[currentTrial];
+      const img = document.getElementById('stimulusImage');
 
-  // Preload image first
-  const preload = new Image();
-  preload.onload = () => {
-    img.src = stim.imageFile;
-    img.style.display = 'block';
+      // Preload image
+      const preload = new Image();
+      preload.onload = () => {
+        img.src = stim.imageFile;
+        img.style.display = 'block';
 
-    setTimeout(() => {
-      img.style.display = 'none';
-      document.getElementById('questions').style.display = 'block';
-      trialStartTime = Date.now();
-    }, 2500);
-  };
-  preload.src = stim.imageFile;
-}
-    
+        // Show image for 2.5s, then hide and show questions
+        setTimeout(() => {
+          img.style.display = 'none';
+          document.getElementById('questions').style.display = 'block';
+          trialStartTime = Date.now();
+        }, 2500);
+      };
+      preload.src = stim.imageFile;
+    }
+
+    // Enable/disable next button based on whether both fields are filled
     function checkFormCompletion() {
       const price = document.getElementById('priceInput').value.trim();
       document.getElementById('nextTrialBtn').disabled = !(price && selectedLabel);
     }
 
+    // Label selection
     document.querySelectorAll('.brandBtn').forEach(btn => {
       btn.addEventListener('click', () => {
         selectedLabel = btn.dataset.label;
@@ -287,14 +296,17 @@
       });
     });
 
+    // Price input check
     document.getElementById('priceInput').addEventListener('input', checkFormCompletion);
 
+    // Next trial
     document.getElementById('nextTrialBtn').addEventListener('click', () => {
       const trialList = getTrialList();
       const stim = trialList[currentTrial];
       const price = document.getElementById('priceInput').value;
       const reactionTime = Date.now() - trialStartTime;
 
+      // Only log data for main trials
       if (!isPractice) {
         trialData.push({
           participantID,
@@ -304,7 +316,7 @@
           brand: selectedLabel,
           itemID: stim.itemID,
           labelPosition: stim.labelPosition,
-          labelType: stim.labelType
+          labelType: stim.labelType,
           n_labels: stim.n_labels
         });
       }
@@ -313,11 +325,7 @@
       startTrial();
     });
 
-    function showPage(pageId) {
-      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-      document.getElementById(pageId).classList.add('active');
-    }
-
+    /************** SUBMIT DATA **************/
     async function submitData() {
       if (!trialData.length) return;
 
@@ -360,7 +368,7 @@
           success = true;
           break;
         } catch (err) {
-          console.warn(`Upload forsøg #${attempt} mislykkedes`, err);
+          console.warn(\`Upload forsøg #\${attempt} mislykkedes\`, err);
           if (attempt < maxRetries) {
             await new Promise(resolve => setTimeout(resolve, 5000));
           }
