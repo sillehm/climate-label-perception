@@ -151,8 +151,6 @@
     </div>
   </div>
 
-  <div id="fixation" style="display:none; font-size: 64px; text-align:center; margin-top: 40vh; color: black;">+</div>
-
   <!-- Debrief Screen -->
   <div id="debrief-screen" class="page"></div>
   
@@ -216,7 +214,14 @@
         const shuffled = shuffleArray(allStimuli);
         practiceTrials = shuffled.slice(0, 3);
         mainTrials = shuffled.slice(3);
+    
+        // Preload all images
+        [...practiceTrials, ...mainTrials].forEach(stim => {
+          const img = new Image();
+          img.src = stim.imageFile;
+        });
       });
+
 
     // Parse CSV
     function parseCSV(data) {
@@ -247,7 +252,6 @@
     function startTrial() {
       const trials = getTrialList();
       if (currentTrial >= trials.length) {
-        // If practice is over, show practiceEnd; else submit data
         if (isPractice) {
           showPage('practiceEnd');
         } else {
@@ -255,40 +259,25 @@
         }
         return;
       }
-
-      // Reset
+    
       selectedLabel = '';
       document.getElementById('priceInput').value = '';
       document.getElementById('questions').style.display = 'none';
       document.getElementById('nextTrialBtn').disabled = true;
       document.querySelectorAll('.brandBtn').forEach(btn => btn.classList.remove('selected'));
-
+    
       const stim = trials[currentTrial];
       const img = document.getElementById('stimulusImage');
-
-      const fixation = document.getElementById('fixation');
-        fixation.style.display = 'block';
+      img.src = stim.imageFile;
+      img.style.display = 'block';
+    
+      setTimeout(() => {
         img.style.display = 'none';
-        document.getElementById('questions').style.display = 'none';
-        
-        setTimeout(() => {
-          fixation.style.display = 'none';
-        
-          const preload = new Image();
-          preload.onload = () => {
-            img.src = stim.imageFile;
-            img.style.display = 'block';
-        
-            setTimeout(() => {
-              img.style.display = 'none';
-              document.getElementById('questions').style.display = 'block';
-              trialStartTime = Date.now();
-            }, 2500);
-          };
-          preload.src = stim.imageFile;
-        
-        }, 1000); // Show fixation cross for 1 second
-      }
+        document.getElementById('questions').style.display = 'block';
+        trialStartTime = Date.now();
+      }, 2500);
+    }
+
 
     // Enable/disable next button based on whether both fields are filled
     function checkFormCompletion() {
