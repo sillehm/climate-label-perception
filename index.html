@@ -151,6 +151,8 @@
     </div>
   </div>
 
+  <div id="fixation" style="display:none; font-size: 48px; text-align:center; margin-top: 30vh;">+</div>
+
   <!-- Debrief Screen -->
   <div id="debrief-screen" class="page"></div>
   
@@ -264,21 +266,29 @@
       const stim = trials[currentTrial];
       const img = document.getElementById('stimulusImage');
 
-      // Preload image
-      const preload = new Image();
-      preload.onload = () => {
-        img.src = stim.imageFile;
-        img.style.display = 'block';
-
-        // Show image for 2.5s, then hide and show questions
+      const fixation = document.getElementById('fixation');
+        fixation.style.display = 'block';
+        img.style.display = 'none';
+        document.getElementById('questions').style.display = 'none';
+        
         setTimeout(() => {
-          img.style.display = 'none';
-          document.getElementById('questions').style.display = 'block';
-          trialStartTime = Date.now();
-        }, 2500);
-      };
-      preload.src = stim.imageFile;
-    }
+          fixation.style.display = 'none';
+        
+          const preload = new Image();
+          preload.onload = () => {
+            img.src = stim.imageFile;
+            img.style.display = 'block';
+        
+            setTimeout(() => {
+              img.style.display = 'none';
+              document.getElementById('questions').style.display = 'block';
+              trialStartTime = Date.now();
+            }, 2500);
+          };
+          preload.src = stim.imageFile;
+        
+        }, 1000); // Show fixation cross for 1 second
+
 
     // Enable/disable next button based on whether both fields are filled
     function checkFormCompletion() {
