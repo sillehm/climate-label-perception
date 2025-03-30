@@ -184,6 +184,7 @@
   <!-- Experiment Page -->
   <div id="experiment" class="page">
     <div id="trialContainer">
+      <div id="fixationCross" style="font-size: 48px; display: none;">+</div>
       <img id="stimulusImage" src="" alt="stimulus">
       <div id="questions" style="display:none;">
         <p>Hvad var prisen (i hele tal)?</p>
@@ -318,15 +319,27 @@
     
       const stim = trials[currentTrial];
       const img = document.getElementById('stimulusImage');
-      img.src = stim.imageFile;
-      img.style.display = 'block';
+      const fixation = document.getElementById('fixationCross');
     
+      // Show fixation cross
+      fixation.style.display = 'block';
+      img.style.display = 'none';
+    
+      // After 1000ms, hide fixation and show image
       setTimeout(() => {
-        img.style.display = 'none';
-        document.getElementById('questions').style.display = 'block';
-        trialStartTime = Date.now();
-      }, 1500);
+        fixation.style.display = 'none';
+        img.src = stim.imageFile;
+        img.style.display = 'block';
+    
+        // After 1500ms of image, show questions
+        setTimeout(() => {
+          img.style.display = 'none';
+          document.getElementById('questions').style.display = 'block';
+          trialStartTime = Date.now();
+        }, 1500);
+      }, 1000);
     }
+
 
 
     // Enable/disable next button based on whether both fields are filled
