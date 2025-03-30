@@ -99,6 +99,17 @@
       text-align: center;
       margin-top: 40px;
     }
+
+    #practiceEnd {
+      margin-top: 150px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 80vh;
+      text-align: center;
+
+    
   </style>
 </head>
 <body>
@@ -217,12 +228,14 @@
     document.getElementById('participant-id').value = participantID;
 
     /************** PAGE NAVIGATION **************/
+    // Consent → Demographics
+    document.getElementById('consentBtn').addEventListener('click', () => {
+      showPage('demographics');
+    });
+    
+    // Demographics → Instructions
     document.getElementById('demographics-form').addEventListener('submit', e => {
       e.preventDefault();
-      showPage('consent');
-    });
-
-    document.getElementById('consentBtn').addEventListener('click', () => {
       showPage('instructions');
     });
 
