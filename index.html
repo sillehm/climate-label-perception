@@ -8,6 +8,7 @@
     .page { display: none; }
     .active { display: block; }
     .button { margin: 5px; }
+    
     #demographics-form {
       max-width: 600px;
       margin: 0 auto;
@@ -16,17 +17,29 @@
       border-radius: 10px;
       box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     }
-    #demographics-form h3 { text-align: center; }
-    #demographics-form label,
+
+    #demographics-form h3 {
+      text-align: center;
+    }
+
+    
+    #demographics-form label {
+      display: block;
+      margin-bottom: 4px; /* small gap between label and input */
+      font-weight: bold;
+    }
+    
     #demographics-form input,
-    #demographics-form select,
-    #demographics-form button {
+    #demographics-form select {
       display: block;
       width: 100%;
-      margin: 10px 0;
       padding: 10px;
       font-size: 16px;
+      margin-bottom: 20px; /* space below each field */
+      box-sizing: border-box;
     }
+
+    
     #trialContainer {
       display: flex;
       flex-direction: column;
@@ -89,8 +102,26 @@
   </style>
 </head>
 <body>
+  <!-- Consent Page -->
+  <div id="consent" class="page active">
+    <h2>Samtykkeerklæring</h2>
+    <p>Du skal til at deltage i et online studie, som er udarbejdet af Sille Hasselbalch Markussen i forbindelse med sit speciale i Cognitive Science. 
+    <br>
+    Studiet varer ca. XX minutter, og dine svar behandles anonymt og fortroligt i overensstemmelse med databeskyttelsesforordningen.
+    <br>
+    <br> 
+      Hvis du på noget tidspunkt lukker denne fane, forlader du eksperimentet, og dine data vil ikke blive gemt. 
+      <br><br>
+    Har du spørgsmål om studiet eller behandlingen af dine data, skal du være velkommen til at kontakte Sille Hasselbalch Markussen, 202006969@post.au.dk.
+    <br><br>
+    Din deltagelse er helt frivillig, og du kan til enhver tid trække dit samtykke tilbage uden konsekvenser.
+    <br><br>
+  Klik på "Næste" for at afgive dit samtykke. Hvis ikke du ønsker at samtykke, kan du lukke fanen.</p>
+    <button class="next-button" id="consentBtn">Næste</button>
+  </div>
+
   <!-- Demographics Page -->
-  <div id="demographics" class="page active">
+  <div id="demographics" class="page">
     <form id="demographics-form">
       <h3>Deltagerinformation</h3>
       <label for="participant-id">Deltager ID</label>
@@ -109,22 +140,6 @@
 
       <button type="submit" id="demographicsSubmit">Fortsæt</button>
     </form>
-  </div>
-
-  <!-- Consent Page -->
-  <div id="consent" class="page">
-    <h2>Samtykkeerklæring</h2>
-    <p>Du skal til at deltage i et online studie, som er udarbejdet af Sille Hasselbalch Markussen i forbindelse med sit speciale i Cognitive Science. 
-    <br>
-    Studiet varer ca. XX minutter, og dine svar behandles anonymt og fortroligt i overensstemmelse med databeskyttelsesforordningen.
-    <br>
-    <br> 
-      Hvis du på noget tidspunkt lukker denne fane, forlader du eksperimentet, og dine data vil ikke blive gemt. 
-      <br><br>
-    Har du spørgsmål om studiet eller behandlingen af dine data, skal du være velkommen til at kontakte Sille Hasselbalch Markussen, 202006969@post.au.dk.
-    <br><br>
-    Din deltagelse er helt frivillig, og du kan til enhver tid trække dit samtykke tilbage uden konsekvenser.</p>
-    <button class="next-button" id="consentBtn">Næste</button>
   </div>
 
   <!-- Instructions Page -->
@@ -176,9 +191,7 @@
   <div id="debrief-screen" class="page"></div>
   
   <script>
-    /************** SINGLE DEFINITIONS ONLY **************/
-    
-    // Generate a random participant ID once
+        // Generate a random participant ID once
     function generateParticipantID() {
       return "P" + Math.floor(100000 + Math.random() * 900000);
     }
