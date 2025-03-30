@@ -257,6 +257,11 @@
       startTrial();
     });
 
+    // Wake up the backend server (Render)
+    fetch("https://osf-uploader-percept.render.com/ping").catch(err => {
+      console.warn("Server wake-up failed:", err);
+    });
+
     /************** FETCH STIMULI **************/
     fetch('stimuli.csv')
       .then(r => r.text())
