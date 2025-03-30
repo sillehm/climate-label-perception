@@ -1,0 +1,438 @@
+
+<!DOCTYPE html>
+<html lang="da">
+<head>
+  <meta charset="UTF-8">
+  <title>Undersøgelse af klimamærke</title>
+  <style>
+    body { font-family: sans-serif; background: #FFFFFF; padding: 20px; }
+    .page { display: none; }
+    .active { display: block; }
+    .button { margin: 5px; }
+    
+    #demographics-form {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 30px;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    #demographics-form h3 {
+      text-align: center;
+    }
+
+    
+    #demographics-form label {
+      display: block;
+      margin-bottom: 4px; /* small gap between label and input */
+      font-weight: bold;
+    }
+    
+    #demographics-form input,
+    #demographics-form select {
+      display: block;
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      margin-bottom: 20px; /* space below each field */
+      box-sizing: border-box;
+    }
+
+    
+    #trialContainer {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 70vh;
+      text-align: center;
+    }
+    .brandBtn {
+      padding: 14px 20px;
+      font-size: 20px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      background-color: #ddd;
+      transition: background-color 0.2s ease;
+      margin-top: 5px;
+      margin-bottom: 30px;
+    }
+    .brandBtn.selected {
+      background-color: #bbb;
+    }
+    .next-button:hover {
+      background-color: #ccc;
+    }
+    .brandBtn:hover:not(.selected) {
+      background-color: #ccc;
+    }
+    #priceInput {
+      height: 25px;
+      width: 50px;
+      font-size: 20px;
+      padding: 10px;
+    }
+    #stimulusImage {
+      max-width: 260px;
+      margin-bottom: 10px;
+      display: none;
+    }
+    .next-button {
+      padding: 14px 20px;
+      font-size: 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      background-color: #ddd;
+      transition: background-color 0.2s ease;
+      margin-top: 20px;
+    }
+    #questions p {
+      font-size: 22px;
+      margin-top: 40px;
+      margin-bottom: 10px;
+    }
+    #debrief-screen {
+      display: block;
+      text-align: center;
+      margin-top: 40px;
+    }
+
+    #practiceEnd {
+      text-align: center;
+      min-height: 80vh;
+    }
+    
+    #practiceEnd.active {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    
+  </style>
+</head>
+<body>
+  <!-- Consent Page -->
+  <div id="consent" class="page active">
+    <h2>Samtykkeerklæring</h2>
+    <p>Du skal til at deltage i et online studie, som er udarbejdet af Sille Hasselbalch Markussen i forbindelse med sit speciale i Cognitive Science. 
+    <br>
+    Studiet varer ca. 10 minutter, og dine svar behandles anonymt og fortroligt i overensstemmelse med databeskyttelsesforordningen.
+    <br>
+    <br> 
+      Hvis du på noget tidspunkt lukker denne fane, forlader du eksperimentet, og dine data vil ikke blive gemt. 
+      <br><br>
+    Har du spørgsmål om studiet eller behandlingen af dine data, skal du være velkommen til at kontakte Sille Hasselbalch Markussen, 202006969@post.au.dk.
+    <br><br>
+    Din deltagelse er helt frivillig, og du kan til enhver tid trække dit samtykke tilbage uden konsekvenser.
+    <br><br>
+  Klik på "Næste" for at afgive dit samtykke. Hvis ikke du ønsker at samtykke, kan du lukke fanen.</p>
+    <button class="next-button" id="consentBtn">Næste</button>
+  </div>
+
+  <!-- Demographics Page -->
+  <div id="demographics" class="page">
+    <form id="demographics-form">
+      <h3>Deltagerinformation</h3>
+      <label for="participant-id">Deltager ID</label>
+      <input type="text" id="participant-id" readonly>
+
+      <label for="gender">Køn</label>
+      <select id="gender" required>
+        <option value="">Vælg</option>
+        <option value="Kvinde">Kvinde</option>
+        <option value="Mand">Mand</option>
+        <option value="Andet">Andet</option>
+      </select>
+
+      <label for="age">Alder</label>
+      <input type="number" id="age" min="10" max="120" required>
+
+      <button type="submit" id="demographicsSubmit">Fortsæt</button>
+    </form>
+  </div>
+
+  <!-- Instructions Page -->
+  <div id="instructions" class="page">
+    <h2>Instruktioner</h2>
+    <p>Du vil blive vist billeder af dagligvareartikler og skal derefter svare på, hvilken pris og hvilket klimamærke varen havde. 
+      <br><br> Et billede af en dagligvare bliver kun vist i kort tid, og det er herefter, du skal svare på de to spørgsmål om varen. 
+      <br>
+      Prisen skal angives i hele tal og klimamærket som A, B, C, D eller E, svarende til det bogstav, du kunne se på mærket. 
+      <br><br>
+      Sørg for at svare på varens pris og klimamærke og klikke på "Næste" hurtigst muligt. 
+      <br><br><br><br>
+      Du vil først blive ført igennem 3 øvelsesrunder, hvor du kan se hvordan undersøgelsen foregår. Derefter starter eksperimentet.
+      <br>
+      Klik på "Næste", når du er klar til øvelserne. 
+    </p>
+    <button class="next-button" id="startPracticeBtn">Næste</button>
+  </div>
+
+  <!-- Practice End Page -->
+  <div id="practiceEnd" class="page">
+    <h2>Nu starter eksperimentet</h2>
+    <p>Du vil nu se flere dagligvarer og du skal fortsat angive deres pris og klimamærke.
+    <br><br>
+    Klik på "Næste", når du er klar til at starte.</p>
+    <button class="next-button" id="startBtn">Næste</button>
+  </div>
+
+  <!-- Experiment Page -->
+  <div id="experiment" class="page">
+    <div id="trialContainer">
+      <img id="stimulusImage" src="" alt="stimulus">
+      <div id="questions" style="display:none;">
+        <p>Hvad var prisen (i hele tal)?</p>
+        <input type="number" id="priceInput">
+        <p>Hvilket mærke havde varen?</p>
+        <div id="brandButtons">
+          <button class="brandBtn" data-label="A">A</button>
+          <button class="brandBtn" data-label="B">B</button>
+          <button class="brandBtn" data-label="C">C</button>
+          <button class="brandBtn" data-label="D">D</button>
+          <button class="brandBtn" data-label="E">E</button>
+        </div>
+        <button class="next-button" id="nextTrialBtn" disabled>Næste</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Debrief Screen -->
+  <div id="debrief-screen" class="page"></div>
+  
+  <script>
+        // Generate a random participant ID once
+    function generateParticipantID() {
+      return "P" + Math.floor(100000 + Math.random() * 900000);
+    }
+    
+    // Show the desired page, hide others
+    function showPage(pageId) {
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.getElementById(pageId).classList.add('active');
+    }
+
+    /************** GLOBAL VARIABLES **************/
+    let participantID = generateParticipantID();
+    let stimuli = [];
+    let trialData = [];
+    let currentTrial = 0;
+    let trialStartTime;
+    let selectedLabel = '';
+    let practiceTrials = [];
+    let mainTrials = [];
+    let isPractice = true;
+
+    // Set the participant ID field right away
+    document.getElementById('participant-id').value = participantID;
+
+    /************** PAGE NAVIGATION **************/
+    // Consent → Demographics
+    document.getElementById('consentBtn').addEventListener('click', () => {
+      showPage('demographics');
+    });
+    
+    // Demographics → Instructions
+    document.getElementById('demographics-form').addEventListener('submit', e => {
+      e.preventDefault();
+      showPage('instructions');
+    });
+
+    document.getElementById('startPracticeBtn').addEventListener('click', () => {
+      showPage('experiment');
+      isPractice = true;
+      currentTrial = 0;
+      startTrial();
+    });
+
+    document.getElementById('startBtn').addEventListener('click', () => {
+      showPage('experiment');
+      isPractice = false;
+      currentTrial = 0;
+      startTrial();
+    });
+
+    /************** FETCH STIMULI **************/
+    fetch('stimuli.csv')
+      .then(r => r.text())
+      .then(data => {
+        const allStimuli = parseCSV(data);
+        const shuffled = shuffleArray(allStimuli);
+        practiceTrials = shuffled.slice(0, 3);
+        mainTrials = shuffled.slice(3);
+    
+        // Preload all images
+        [...practiceTrials, ...mainTrials].forEach(stim => {
+          const img = new Image();
+          img.src = stim.imageFile;
+        });
+      });
+
+
+    // Parse CSV
+    function parseCSV(data) {
+      const lines = data.split('\n').filter(l => l.trim() !== '');
+      const header = lines[0].split(',');
+      return lines.slice(1).map(line => {
+        const obj = {};
+        line.split(',').forEach((val, i) => obj[header[i].trim()] = val.trim());
+        return obj;
+      });
+    }
+
+    // Shuffle
+    function shuffleArray(arr) {
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    // Determine which list we are using
+    function getTrialList() {
+      return isPractice ? practiceTrials : mainTrials;
+    }
+
+    /************** TRIAL LOGIC **************/
+    function startTrial() {
+      const trials = getTrialList();
+      if (currentTrial >= trials.length) {
+        if (isPractice) {
+          showPage('practiceEnd');
+        } else {
+          submitData();
+        }
+        return;
+      }
+    
+      selectedLabel = '';
+      document.getElementById('priceInput').value = '';
+      document.getElementById('questions').style.display = 'none';
+      document.getElementById('nextTrialBtn').disabled = true;
+      document.querySelectorAll('.brandBtn').forEach(btn => btn.classList.remove('selected'));
+    
+      const stim = trials[currentTrial];
+      const img = document.getElementById('stimulusImage');
+      img.src = stim.imageFile;
+      img.style.display = 'block';
+    
+      setTimeout(() => {
+        img.style.display = 'none';
+        document.getElementById('questions').style.display = 'block';
+        trialStartTime = Date.now();
+      }, 1500);
+    }
+
+
+    // Enable/disable next button based on whether both fields are filled
+    function checkFormCompletion() {
+      const price = document.getElementById('priceInput').value.trim();
+      document.getElementById('nextTrialBtn').disabled = !(price && selectedLabel);
+    }
+
+    // Label selection
+    document.querySelectorAll('.brandBtn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        selectedLabel = btn.dataset.label;
+        document.querySelectorAll('.brandBtn').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        checkFormCompletion();
+      });
+    });
+
+    // Price input check
+    document.getElementById('priceInput').addEventListener('input', checkFormCompletion);
+
+    // Next trial
+    document.getElementById('nextTrialBtn').addEventListener('click', () => {
+      const trialList = getTrialList();
+      const stim = trialList[currentTrial];
+      const price = document.getElementById('priceInput').value;
+      const reactionTime = Date.now() - trialStartTime;
+
+      // Only log data for main trials
+      if (!isPractice) {
+        trialData.push({
+          participantID,
+          stimulus: stim.imageFile,
+          reactionTime,
+          price,
+          brand: selectedLabel,
+          itemID: stim.itemID,
+          labelPosition: stim.labelPosition,
+          labelType: stim.labelType,
+          n_labels: stim.n_labels
+        });
+      }
+
+      currentTrial++;
+      startTrial();
+    });
+
+    /************** SUBMIT DATA **************/
+    async function submitData() {
+      if (!trialData.length) return;
+
+      const headers = Object.keys(trialData[0]);
+      const rows = trialData.map(row =>
+        headers.map(h => `"${row[h]}"`).join(',')
+      );
+      const csvContent = [headers.join(','), ...rows].join('\n');
+
+      const participantId = document.getElementById("participant-id").value;
+      const dateStr = new Date().toISOString().split("T")[0];
+      const filename = `${participantId}_${dateStr}.csv`;
+
+      const debrief = document.getElementById("debrief-screen");
+      debrief.innerHTML = `
+        <h2>Gemmer dine data...</h2>
+        <p>Dette kan tage op til et minut. Vent venligst - luk ikke fanen endnu.</p>
+      `;
+      debrief.style.display = "block";
+      showPage("debrief-screen");
+
+      const maxRetries = 3;
+      let success = false;
+
+      for (let attempt = 1; attempt <= maxRetries; attempt++) {
+        try {
+          const res = await fetch("https://osf-uploader-perception.onrender.com/upload", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ filename, content: csvContent })
+          });
+
+          if (!res.ok) throw new Error("Upload failed");
+
+          debrief.innerHTML = `
+            <h2>Tak for din deltagelse!</h2>
+            <p>Dine data er nu gemt.</p>
+            <p>Du må gerne lukke fanen.</p>
+          `;
+          success = true;
+          break;
+        } catch (err) {
+          console.warn(`Upload forsøg #${attempt} mislykkedes`, err);
+          if (attempt < maxRetries) {
+            await new Promise(resolve => setTimeout(resolve, 5000));
+          }
+        }
+      }
+
+      if (!success) {
+        debrief.innerHTML = `
+          <h2>Fejl</h2>
+          <p>Data kunne ikke gemmes efter gentagne forsøg.<br>
+          Kontakt forsøgslederen.</p>
+        `;
+      }
+    }
+  </script>
+</body>
+</html>
