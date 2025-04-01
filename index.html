@@ -163,7 +163,7 @@
       <br>
       Prisen skal angives i hele tal og klimamærket som A, B, C, D eller E, svarende til det bogstav, du kunne se på mærket. 
       <br><br>
-      Sørg for at svare på varens pris og klimamærke og klikke på "Næste" hurtigst muligt. 
+      Sørg for at svare på varens pris og klimamærke og klikke på "Næste" hurtigst muligt.
       <br><br><br><br>
       Du vil først blive ført igennem 3 øvelsesrunder, hvor du kan se hvordan undersøgelsen foregår. Derefter starter eksperimentet.
       <br>
@@ -326,22 +326,28 @@
       const img = document.getElementById('stimulusImage');
       const fixation = document.getElementById('fixationCross');
     
-      // Show fixation cross
+    // Show fixation cross for 1000 ms, then image for exactly 1500 ms
       fixation.style.display = 'block';
       img.style.display = 'none';
-    
-      // After 1000ms, hide fixation and show image
+      
       setTimeout(() => {
         fixation.style.display = 'none';
         img.src = stim.imageFile;
         img.style.display = 'block';
-    
-        // After 1500ms of image, show questions
-        setTimeout(() => {
-          img.style.display = 'none';
-          document.getElementById('questions').style.display = 'block';
-          trialStartTime = Date.now();
-        }, 1500);
+      
+        const start = performance.now();
+      
+        function checkTime(now) {
+          if (now - start >= 1500) {
+            img.style.display = 'none';
+            document.getElementById('questions').style.display = 'block';
+            trialStartTime = Date.now();
+          } else {
+            requestAnimationFrame(checkTime);
+          }
+        }
+      
+        requestAnimationFrame(checkTime);
       }, 1000);
     }
 
